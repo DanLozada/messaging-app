@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import validator from "validator";
+import MessageBubble from "./MessageBubble";
 import Order from "./Order";
 
 const EXAMPLE_DATA = {
@@ -11,14 +12,19 @@ const EXAMPLE_DATA = {
      delivery_datetime: "Monday at 8am",
      customer_address: "123 Main St",
      vendor_addresses: ["123 Main St", "456 Main St"],
-     products: {
-          apples: 1,
-          oranges: 2,
-          bananas: 3,
-     },
+     products: [
+          { item: "apples", quantity: 1 },
+          { item: "bananas", quantity: 2 },
+          { item: "oranges", quantity: 3 },
+     ],
 };
 
-export default function Conversation(props: { messages: any[]; name: string }) {
+interface ConversationProps {
+     messages: { author: string; sid: string; body: string }[];
+     name: string;
+}
+
+const Conversation = (props: ConversationProps) => {
      const [modalOpen, setModalOpen] = useState(false);
      const [name, setName] = useState("");
      const [number, setNumber] = useState("");
@@ -28,7 +34,7 @@ export default function Conversation(props: { messages: any[]; name: string }) {
           e.preventDefault();
           if (validatePhoneNumber(number)) {
                axios.get(
-                    `http://localhost:8000/api/v1/conversations/createConversation?client=${number}&name=${name}`
+                    `https://supplynownodeapi.herokuapp.com/api/v1/conversations/createConversation?client=${number}&name=${name}`
                ).then((response) => {
                     console.log(response);
                     setModalOpen(false);
@@ -135,38 +141,25 @@ export default function Conversation(props: { messages: any[]; name: string }) {
                ) : (
                     <div>
                          {orderSummary ? <Order data={EXAMPLE_DATA} /> : <></>}
-                         <button
+                         {/* <button
                               type="button"
                               onClick={() => setOrderSummary(!orderSummary)}
                               className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                          >
                               Toggle Summary
-                         </button>
-                         {props.messages == [] ? (
-                              <h1>no messages</h1>
-                         ) : (
-                              <div className="flex flex-col justify-end h-full">
-                                   {props.messages.map((message) =>
-                                        message.author === "Tack" ? (
-                                             <div
-                                                  className="text-gray-800 p-4 bg-blue-200 rounded-xl m-2 flex justify-start mr-16"
-                                                  key={message.sid}
-                                             >
-                                                  <a>{message.body}</a>
-                                             </div>
-                                        ) : (
-                                             <div
-                                                  className="text-gray-800 p-4 bg-gray-200 rounded-xl m-2 flex justify-end ml-16"
-                                                  key={message.sid}
-                                             >
-                                                  <a>{message.body}</a>
-                                             </div>
-                                        )
-                                   )}
-                              </div>
-                         )}
+                         </button> */}
+                         <div className="flex flex-col justify-end h-full">
+                              {props.messages.map((message) => (
+                                   <MessageBubble
+                                        key={message.sid}
+                                        message={message}
+                                   />
+                              ))}
+                         </div>
                     </div>
                )}
           </div>
      );
-}
+};
+
+export default Conversation;

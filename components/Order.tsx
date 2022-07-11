@@ -27,7 +27,16 @@ const data = [
      // More projects...
 ];
 
-export default function Order(props: any) {
+interface OrderProps {
+     data: {
+          customer_address: string;
+          delivery_datetime: string;
+          vendor_addresses: string[];
+          products: { item: string; quantity: number }[];
+     };
+}
+
+export default function Order(props: OrderProps) {
      const [example_data, setExampleData] = useState(props.data);
 
      return (
@@ -93,85 +102,60 @@ export default function Order(props: any) {
                               </tr>
                          </thead>
                          <tbody>
-                              {Object.keys(example_data.products).map(
-                                   (product_name, idx) => (
-                                        <tr
-                                             key={idx}
-                                             className="border-b border-gray-200"
-                                        >
-                                             <td className=" pl-4 text-sm md:pl-0 w-2/5">
-                                                  <div className="whitespace-wrap font-medium text-gray-900">
-                                                       {product_name}
-                                                  </div>
-                                             </td>
-                                             <td className="py-4 text-right text-sm text-gray-500 sm:table-cell">
-                                                  <div>
-                                                       <input
-                                                            type="text"
-                                                            className="bg-gray-200 text-xs appearance-none border-2 w-2/3 text-center border-gray-200 rounded-lg py-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                                            value={
-                                                                 example_data
-                                                                      .products[
-                                                                      product_name
-                                                                 ]
-                                                            }
-                                                            onChange={(e) => {
-                                                                 setExampleData(
-                                                                      {
-                                                                           ...example_data,
-                                                                           products:
-                                                                                {
-                                                                                     ...example_data.products,
-                                                                                     [product_name]:
-                                                                                          e
-                                                                                               .target
-                                                                                               .value,
-                                                                                },
-                                                                      }
-                                                                 );
-                                                            }}
-                                                       />
-                                                  </div>
-                                             </td>
-                                             <td>
-                                                  <div className="mx-12 mr-8">
-                                                       <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                 setExampleData(
-                                                                      {
-                                                                           ...example_data,
-                                                                           products:
-                                                                                {
-                                                                                     ...example_data.products,
-                                                                                     [product_name]:
-                                                                                          "OOS",
-                                                                                },
-                                                                      }
-                                                                 );
-                                                            }}
-                                                            className=" inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              {example_data.products.map((product, idx) => (
+                                   <tr
+                                        key={idx}
+                                        className="border-b border-gray-200"
+                                   >
+                                        <td className=" pl-4 text-sm md:pl-0 w-2/5">
+                                             <div className="whitespace-wrap font-medium text-gray-900">
+                                                  {product.item}
+                                             </div>
+                                        </td>
+                                        <td className="py-4 text-right text-sm text-gray-500 sm:table-cell">
+                                             <div>
+                                                  <input
+                                                       type="text"
+                                                       className="bg-gray-200 text-xs appearance-none border-2 w-2/3 text-center border-gray-200 rounded-lg py-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                                       value={product.quantity}
+                                                       onChange={(e) => {
+                                                            console.log(
+                                                                 e.target.value
+                                                            );
+                                                       }}
+                                                  />
+                                             </div>
+                                        </td>
+                                        <td>
+                                             <div className="mx-12 mr-8">
+                                                  <button
+                                                       type="button"
+                                                       onClick={() => {
+                                                            console.log(
+                                                                 "remove product"
+                                                            );
+                                                       }}
+                                                       className=" inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                  >
+                                                       <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-5 w-5"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor"
+                                                            strokeWidth={2}
                                                        >
-                                                            <svg
-                                                                 xmlns="http://www.w3.org/2000/svg"
-                                                                 className="h-5 w-5"
-                                                                 fill="none"
-                                                                 viewBox="0 0 24 24"
-                                                                 stroke="currentColor"
-                                                                 strokeWidth={2}
-                                                            >
-                                                                 <path
-                                                                      strokeLinecap="round"
-                                                                      strokeLinejoin="round"
-                                                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                                                 />
-                                                            </svg>
-                                                       </button>
-                                                  </div>
-                                             </td>
-                                        </tr>
-                                   )
-                              )}
+                                                            <path
+                                                                 strokeLinecap="round"
+                                                                 strokeLinejoin="round"
+                                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                            />
+                                                       </svg>
+                                                  </button>
+                                             </div>
+                                        </td>
+                                   </tr>
+                              ))}
                          </tbody>
 
                          {/* <tfoot>
