@@ -63,11 +63,15 @@ const Conversation = (props: ConversationProps) => {
      return (
           <div className="flex flex-col">
                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex flex-row mb-8">
-                    <div className="fixed top-16 left-24 md:top-4 md:left-72 bg-white p-4 rounded-xl shadow-xl md:w-1/3">
-                         <h1 className="text-lg font-bold">
-                              {props.name == "" ? "Select Convo" : props.name}
-                         </h1>
-                    </div>
+                    {props.name !== "" ? (
+                         <div className="fixed top-16 left-24 md:top-4 md:left-72 bg-white p-4 rounded-xl shadow-xl md:w-1/3">
+                              <h1 className="text-lg font-bold">
+                                   {props.name}
+                              </h1>
+                         </div>
+                    ) : (
+                         <></>
+                    )}
                     <div className="absolute right-8 top-9">
                          <a onClick={() => setModalOpen(!modalOpen)}>
                               <svg
@@ -89,7 +93,7 @@ const Conversation = (props: ConversationProps) => {
                </div>
                {modalOpen ? (
                     <div className="isolate -space-y-px rounded-md shadow-sm">
-                         <div className="relative border border-gray-300 rounded-md rounded-b-none px-3 py-2 focus-within:z-10 focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600">
+                         <div className="relative border border-gray-300 rounded-md rounded-b-none px-3 py-2 focus-within:z-10 focus-within:ring-1 focus-within:ring-amber-600 focus-within:border-amber-600">
                               <label
                                    htmlFor="name"
                                    className="block text-xs md:text-lg font-medium text-gray-900"
@@ -106,7 +110,7 @@ const Conversation = (props: ConversationProps) => {
                                    value={name}
                               />
                          </div>
-                         <div className="relative border border-gray-300 rounded-md rounded-t-none px-3 py-2 focus-within:z-10 focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600">
+                         <div className="relative border border-gray-300 rounded-md rounded-t-none px-3 py-2 focus-within:z-10 focus-within:ring-1 focus-within:ring-amber-600 focus-within:border-amber-600">
                               <label
                                    htmlFor="job-title"
                                    className="block text-xs md:text-lg font-medium text-gray-900"
@@ -132,7 +136,7 @@ const Conversation = (props: ConversationProps) => {
                               <button
                                    type="button"
                                    onClick={(e) => handleSubmit(e)}
-                                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                               >
                                    Create Conversation
                               </button>
@@ -141,21 +145,30 @@ const Conversation = (props: ConversationProps) => {
                ) : (
                     <div>
                          {orderSummary ? <Order data={EXAMPLE_DATA} /> : <></>}
-                         {/* <button
-                              type="button"
-                              onClick={() => setOrderSummary(!orderSummary)}
-                              className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                         >
-                              Toggle Summary
-                         </button> */}
-                         <div className="flex flex-col justify-end h-full">
-                              {props.messages.map((message) => (
-                                   <MessageBubble
-                                        key={message.sid}
-                                        message={message}
-                                   />
-                              ))}
-                         </div>
+                         {props.name !== "" ? (
+                              <>
+                                   <button
+                                        type="button"
+                                        onClick={() => {
+                                             setOrderSummary(!orderSummary);
+                                             console.log(props.messages);
+                                        }}
+                                        className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                                   >
+                                        Toggle Summary
+                                   </button>
+                                   <div className="flex flex-col justify-end h-full">
+                                        {props.messages.map((message) => (
+                                             <MessageBubble
+                                                  key={message.sid}
+                                                  message={message}
+                                             />
+                                        ))}
+                                   </div>
+                              </>
+                         ) : (
+                              <></>
+                         )}
                     </div>
                )}
           </div>

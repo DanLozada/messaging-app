@@ -135,7 +135,7 @@ export default function Order(props: OrderProps) {
                                                                  "remove product"
                                                             );
                                                        }}
-                                                       className=" inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                       className=" inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-full text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                                                   >
                                                        <svg
                                                             xmlns="http://www.w3.org/2000/svg"

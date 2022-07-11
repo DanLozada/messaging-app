@@ -56,7 +56,7 @@ export default function Example(props: ConversationsListProps) {
                                                        <div className="absolute top-0 right-0 -mr-12 pt-2">
                                                             <button
                                                                  type="button"
-                                                                 className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-indigo-600 hover:bg-indigo-700"
+                                                                 className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-amber-400 hover:bg-amber-400"
                                                                  onClick={() =>
                                                                       setSidebarOpen(
                                                                            false
@@ -68,7 +68,7 @@ export default function Example(props: ConversationsListProps) {
                                                                       sidebar
                                                                  </span>
                                                                  <XIcon
-                                                                      className="h-6 w-6 text-white"
+                                                                      className="h-6 w-6 text-gray-800"
                                                                       aria-hidden="true"
                                                                  />
                                                             </button>
@@ -90,7 +90,7 @@ export default function Example(props: ConversationsListProps) {
                                                                                 key={
                                                                                      item.sid
                                                                                 }
-                                                                                className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                                                className="text-gray-600 bg-amber-200 hover:bg-amber-400 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                                            >
                                                                                 {
                                                                                      item.friendlyName
