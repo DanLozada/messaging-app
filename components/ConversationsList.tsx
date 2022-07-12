@@ -85,6 +85,11 @@ export default function Example(props: ConversationsListProps) {
                                                                                 key={
                                                                                      item.sid
                                                                                 }
+                                                                                onClick={() =>
+                                                                                     props.setSelectedSid(
+                                                                                          item.sid
+                                                                                     )
+                                                                                }
                                                                                 className="text-gray-600 bg-amber-200 hover:bg-amber-400 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                                            >
                                                                                 {
