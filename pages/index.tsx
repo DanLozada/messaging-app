@@ -1,66 +1,52 @@
 import type { NextPage } from "next";
+import useSWR, { mutate } from "swr";
 import Conversation from "../components/Conversation";
 import ConversationsList from "../components/ConversationsList";
 import InputGroup from "../components/InputGroup";
 import Welcome from "../components/Welcome";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import Order from "../components/Order";
-import { send } from "process";
+import {
+     SEND_MESSAGE_URL,
+     GET_CONVERSATIONS_URL,
+     GET_MESSAGES_URL,
+     REMOVE_CONVERSATION_URL,
+     GET_CONVO_NAME_URL,
+} from "../constants";
 
 const Home: NextPage = () => {
-     const [messages, setMessages] = useState([]);
      const [selectedSid, setSelectedSid] = useState("");
-     const [conversations, setConversations] = useState<any>([]);
      const [convoName, setConvoName] = useState("");
 
-     const getConversations = async () => {
-          const response = await axios.get(
-               `https://supplynownodeapi.herokuapp.com/api/v1/conversations/getConversations`
-          );
-          setConversations(response.data);
-          console.log(response.data);
-     };
+     const conversationsFetcher = (url: string) =>
+          axios.get(url).then((res) => res.data);
 
-     const triggerConvoLoad = (sid: string) => {
-          setSelectedSid(sid);
-          axios.get(
-               `https://supplynownodeapi.herokuapp.com/api/v1/conversations/getConversationMessages?sid=${sid}`
-          ).then((res) => setMessages(res.data));
-     };
+     const messagesFetcher = (url: string) =>
+          axios.get(url).then((res) => res.data);
+
+     const { data } = useSWR(GET_CONVERSATIONS_URL, conversationsFetcher, {
+          refreshInterval: 2000,
+     });
+
+     const { data: messages } = useSWR(
+          `${GET_MESSAGES_URL}${selectedSid}`,
+          messagesFetcher,
+          { refreshInterval: 1000 }
+     );
 
      const sendMessage = (sid: string, message: string) => {
-          axios.post(
-               `https://supplynownodeapi.herokuapp.com/api/v1/conversations/sendMessage`,
-               {
-                    sid: sid,
-                    message: message,
-               }
-          ).then((res) => {
-               triggerConvoLoad(sid);
-          });
+          axios.post(SEND_MESSAGE_URL, {
+               sid: sid,
+               message: message,
+          }).then(() => {});
      };
 
      const removeConversation = (sid: string) => {
-          axios.get(
-               `https://supplynownodeapi.herokuapp.com/api/v1/conversations/removeConversation?sid=${sid}`
-          ).then((res) => {
-               setConversations(
-                    conversations.filter(
-                         (convo: { sid: string }) => convo.sid !== sid
-                    )
-               );
-          });
+          axios.get(`${REMOVE_CONVERSATION_URL}${sid}`).then((res) => {});
      };
 
      useEffect(() => {
-          getConversations();
-     }, []);
-
-     useEffect(() => {
-          axios.get(
-               `https://supplynownodeapi.herokuapp.com/api/v1/conversations/getConversationName?sid=${selectedSid}`
-          ).then((response) => {
+          axios.get(`${GET_CONVO_NAME_URL}${selectedSid}`).then((response) => {
                setConvoName(response.data);
           });
      }, [selectedSid]);
@@ -68,10 +54,10 @@ const Home: NextPage = () => {
      return (
           <>
                <ConversationsList
-                    trigger={triggerConvoLoad}
-                    conversations={conversations}
+                    data={data ? data : "No data yet"}
+                    setSelectedSid={setSelectedSid}
                >
-                    <Conversation messages={messages} name={convoName} />
+                    <Conversation name={convoName} data={messages} />
                     {selectedSid !== "" ? (
                          <>
                               <InputGroup

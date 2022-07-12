@@ -3,6 +3,7 @@ import { useState } from "react";
 import validator from "validator";
 import MessageBubble from "./MessageBubble";
 import Order from "./Order";
+import { CURRENT_URL } from "../constants";
 
 const EXAMPLE_DATA = {
      conversation_sids: [
@@ -20,8 +21,8 @@ const EXAMPLE_DATA = {
 };
 
 interface ConversationProps {
-     messages: { author: string; sid: string; body: string }[];
      name: string;
+     data: { author: string; sid: string; body: string }[];
 }
 
 const Conversation = (props: ConversationProps) => {
@@ -29,12 +30,13 @@ const Conversation = (props: ConversationProps) => {
      const [name, setName] = useState("");
      const [number, setNumber] = useState("");
      const [orderSummary, setOrderSummary] = useState(false);
+     console.log(props.data);
 
      const handleSubmit = (e: any) => {
           e.preventDefault();
           if (validatePhoneNumber(number)) {
                axios.get(
-                    `https://supplynownodeapi.herokuapp.com/api/v1/conversations/createConversation?client=${number}&name=${name}`
+                    `${CURRENT_URL}/api/v1/conversations/createConversation?client=${number}&name=${name}`
                ).then((response) => {
                     console.log(response);
                     setModalOpen(false);
@@ -52,13 +54,14 @@ const Conversation = (props: ConversationProps) => {
           }
      };
 
-     const fetchData = () => {
-          axios.get("someurl?sid=CH598ce11a127e4a4c85dcf2ae3b8bfdbf").then(
-               (response) => {
-                    console.log(response);
-               }
-          );
-     };
+     // const fetchData = () => {
+     //      axios.get("someurl?sid=CH598ce11a127e4a4c85dcf2ae3b8bfdbf").then(
+     //           (response) => {
+     //                console.log(response);
+     //           }
+     //      );
+     // };
+     // console.log(props.data);
 
      return (
           <div className="flex flex-col">
@@ -151,19 +154,24 @@ const Conversation = (props: ConversationProps) => {
                                         type="button"
                                         onClick={() => {
                                              setOrderSummary(!orderSummary);
-                                             console.log(props.messages);
                                         }}
                                         className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                                    >
                                         Toggle Summary
                                    </button>
                                    <div className="flex flex-col justify-end h-full">
-                                        {props.messages.map((message) => (
-                                             <MessageBubble
-                                                  key={message.sid}
-                                                  message={message}
-                                             />
-                                        ))}
+                                        {props.data !== undefined ? (
+                                             <>
+                                                  {props.data.map((message) => (
+                                                       <MessageBubble
+                                                            key={message.sid}
+                                                            message={message}
+                                                       />
+                                                  ))}
+                                             </>
+                                        ) : (
+                                             <></>
+                                        )}
                                    </div>
                               </>
                          ) : (

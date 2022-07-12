@@ -3,9 +3,9 @@ import { Dialog, Menu, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 
 interface ConversationsListProps {
-     trigger: any;
-     conversations: { sid: string; friendlyName: string }[];
      children: any;
+     data: any;
+     setSelectedSid: (sid: string) => void;
 }
 
 export default function Example(props: ConversationsListProps) {
@@ -77,16 +77,11 @@ export default function Example(props: ConversationsListProps) {
                                                   <div className="mt-5 flex-1 h-0 overflow-y-auto">
                                                        <nav className="px-2 space-y-1">
                                                             <>
-                                                                 {props.conversations.map(
+                                                                 {props.data.map(
                                                                       (
-                                                                           item
+                                                                           item: any
                                                                       ) => (
                                                                            <a
-                                                                                onClick={() =>
-                                                                                     props.trigger(
-                                                                                          item.sid
-                                                                                     )
-                                                                                }
                                                                                 key={
                                                                                      item.sid
                                                                                 }
@@ -122,31 +117,29 @@ export default function Example(props: ConversationsListProps) {
                          <div className="flex flex-col flex-grow border-r border-gray-200 pt-5 bg-white overflow-y-auto">
                               <div className="mt-5 flex-grow flex flex-col">
                                    <nav className="flex-1 px-2 pb-4 space-y-1">
-                                        <a
-                                             onClick={() =>
-                                                  console.log("create an order")
-                                             }
-                                             className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                        >
-                                             Create an Order
-                                        </a>
-                                        <>
-                                             {props.conversations.map(
-                                                  (item) => (
-                                                       <a
-                                                            onClick={() =>
-                                                                 props.trigger(
-                                                                      item.sid
-                                                                 )
-                                                            }
-                                                            key={item.sid}
-                                                            className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                       >
-                                                            {item.friendlyName}
-                                                       </a>
-                                                  )
-                                             )}
-                                        </>
+                                        {props.data == "No data yet" ? (
+                                             <>No data yet</>
+                                        ) : (
+                                             <>
+                                                  {props.data.map(
+                                                       (item: any) => (
+                                                            <a
+                                                                 key={item.sid}
+                                                                 onClick={() =>
+                                                                      props.setSelectedSid(
+                                                                           item.sid
+                                                                      )
+                                                                 }
+                                                                 className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md bg-amber-200"
+                                                            >
+                                                                 {
+                                                                      item.friendlyName
+                                                                 }
+                                                            </a>
+                                                       )
+                                                  )}
+                                             </>
+                                        )}
                                    </nav>
                               </div>
                          </div>
