@@ -14,9 +14,9 @@ const EXAMPLE_DATA = {
      customer_address: "123 Main St",
      vendor_addresses: ["123 Main St", "456 Main St"],
      products: [
-          { item: "apples", quantity: 1 },
-          { item: "bananas", quantity: 2 },
-          { item: "oranges", quantity: 3 },
+          { item: "apples", quantity: "1" },
+          { item: "bananas", quantity: "2" },
+          { item: "oranges", quantity: "3" },
      ],
 };
 

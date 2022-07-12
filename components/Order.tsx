@@ -2,45 +2,36 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 
-const data = [
-     {
-          id: 1,
-          name: "New Advertising Campaign",
-          hours: "12.0",
-          quantity: 5,
-          price: "$900.00",
-     },
-     {
-          id: 1,
-          name: "New Advertising Campaign",
-          hours: "12.0",
-          quantity: 5,
-          price: "$900.00",
-     },
-     {
-          id: 1,
-          name: "New Advertising Campaign",
-          hours: "12.0",
-          quantity: 5,
-          price: "$900.00",
-     },
-     // More projects...
-];
-
 interface OrderProps {
      data: {
           customer_address: string;
           delivery_datetime: string;
           vendor_addresses: string[];
-          products: { item: string; quantity: number }[];
+          products: { item: string; quantity: string }[];
      };
 }
 
 export default function Order(props: OrderProps) {
-     const [example_data, setExampleData] = useState(props.data);
+     const [orderData, setOrderData] = useState(props.data);
+     const [newItemName, setNewItemName] = useState("");
+     const [newItemQuantity, setNewItemQuantity] = useState("");
+
+     const addProduct = () => {
+          const newProducts = [...orderData.products];
+          newProducts.push({ item: newItemName, quantity: newItemQuantity });
+          setOrderData({ ...orderData, products: newProducts });
+          setNewItemName("");
+          setNewItemQuantity("");
+     };
+
+     const removeProduct = (index: number) => {
+          const newProducts = [...orderData.products];
+          newProducts.splice(index, 1);
+          setOrderData({ ...orderData, products: newProducts });
+     };
 
      return (
-          <div className="px-4 sm:px-6 lg:px-8 border-2 border-amber-300 rounded-lg p-4 mt-4">
+          <div className="px-4 sm:px-6 lg:px-8 border-2 border-amber-300 rounded-lg p-4 mt-2">
                <div className="absolute right-12 top-48 md:top-36 md:right-16">
                     <a onClick={() => {}}>
                          <svg
@@ -60,28 +51,33 @@ export default function Order(props: OrderProps) {
                     </a>
                </div>
                <div className="sm:flex sm:items-center">
-                    <div className="sm:flex-auto">
+                    <div className="sm:flex-auto flex flex-col">
                          <h1 className="text-xl font-semibold text-gray-900">
                               Order Summary
                          </h1>
-                         <p className="mt-2 text-sm text-gray-700">
-                              {example_data.customer_address}
-                         </p>
-                         <p className="mt-2 text-sm text-gray-700">
-                              {example_data.delivery_datetime}
-                         </p>
-                    </div>
-                    {/* <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                         <button
-                              type="button"
-                              onClick={() => {
-                                   console.log("send to client by email");
+                         <input
+                              type="text"
+                              className="bg-gray-200 text-xs appearance-none border-2 w-2/3 md:w-1/3 p-2 my-2 text-left border-gray-200 rounded-lg py-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              value={orderData.customer_address}
+                              onChange={(e) => {
+                                   setOrderData({
+                                        ...orderData,
+                                        customer_address: e.target.value,
+                                   });
                               }}
-                              className="inline-flex items-center justify-center rounded-md border border-transparent bg-amber-200 px-4 py-2 text-sm font-medium text-gray-800 shadow-sm hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 sm:w-auto"
-                         >
-                              Send to Client
-                         </button>
-                    </div> */}
+                         />
+                         <input
+                              type="text"
+                              className="bg-gray-200 text-xs appearance-none border-2 w-2/3 md:w-1/3 p-2 my-2 text-left border-gray-200 rounded-lg py-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              value={orderData.delivery_datetime}
+                              onChange={(e) => {
+                                   setOrderData({
+                                        ...orderData,
+                                        delivery_datetime: e.target.value,
+                                   });
+                              }}
+                         />
+                    </div>
                </div>
                <div className="-mx-4 mt-8 flex flex-col sm:-mx-6 md:mx-0 pb-2">
                     <table className="min-w-full divide-y divide-gray-300">
@@ -102,7 +98,7 @@ export default function Order(props: OrderProps) {
                               </tr>
                          </thead>
                          <tbody>
-                              {example_data.products.map((product, idx) => (
+                              {orderData.products.map((product, idx) => (
                                    <tr
                                         key={idx}
                                         className="border-b border-gray-200"
@@ -131,9 +127,7 @@ export default function Order(props: OrderProps) {
                                                   <button
                                                        type="button"
                                                        onClick={() => {
-                                                            console.log(
-                                                                 "remove product"
-                                                            );
+                                                            removeProduct(idx);
                                                        }}
                                                        className=" inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-full text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                                                   >
@@ -157,107 +151,38 @@ export default function Order(props: OrderProps) {
                                    </tr>
                               ))}
                          </tbody>
-
-                         {/* <tfoot>
-                              <tr>
-                                   <th
-                                        scope="row"
-                                        colSpan={3}
-                                        className="hidden pl-6 pr-3 pt-6 text-right text-sm font-normal text-gray-500 sm:table-cell md:pl-0"
-                                   >
-                                        Subtotal
-                                   </th>
-                                   <th
-                                        scope="row"
-                                        className="pl-4 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden"
-                                   >
-                                        Subtotal
-                                   </th>
-                                   <td className="pl-3 pr-4 pt-6 text-right text-sm text-gray-500 sm:pr-6 md:pr-0">
-                                        {props.subtotal}
-                                   </td>
-                              </tr>
-                              <tr>
-                                   <th
-                                        scope="row"
-                                        colSpan={3}
-                                        className="hidden pl-6 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell md:pl-0"
-                                   >
-                                        Delivery Fee
-                                   </th>
-                                   <th
-                                        scope="row"
-                                        className="pl-4 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden"
-                                   >
-                                        Delivery Fee
-                                   </th>
-                                   <td className="pl-3 pr-4 pt-4 text-right text-sm text-gray-500 sm:pr-6 md:pr-0">
-                                        <div>
-                                             <div className="mt-1 relative rounded-md shadow-sm">
-                                                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                       <span className="text-gray-500 sm:text-sm">
-                                                            $
-                                                       </span>
-                                                  </div>
-                                                  <input
-                                                       type="text"
-                                                       name="price"
-                                                       value={deliveryFee}
-                                                       onChange={(e) => {
-                                                            setDeliveryFee(
-                                                                 e.target.value
-                                                            );
-                                                       }}
-                                                       onKeyDown={(e) => {
-                                                            if (
-                                                                 e.key ===
-                                                                 "Enter"
-                                                            ) {
-                                                                 e.preventDefault();
-                                                                 setTotal(
-                                                                      parseFloat(
-                                                                           props.subtotal
-                                                                      ) +
-                                                                           parseFloat(
-                                                                                deliveryFee
-                                                                           )
-                                                                 );
-                                                            }
-                                                       }}
-                                                       className="focus:ring-amber-300 focus:border-amber-300 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md text-right"
-                                                  />
-                                                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                                       <span
-                                                            className="text-gray-500 sm:text-sm"
-                                                            id="price-currency"
-                                                       >
-                                                            USD
-                                                       </span>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </td>
-                              </tr>
-                              <tr>
-                                   <th
-                                        scope="row"
-                                        colSpan={3}
-                                        className="hidden pl-6 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell md:pl-0"
-                                   >
-                                        Total
-                                   </th>
-                                   <th
-                                        scope="row"
-                                        className="pl-4 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden"
-                                   >
-                                        Total
-                                   </th>
-                                   <td className="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-6 md:pr-0">
-                                        $ {total}
-                                   </td>
-                              </tr>
-                         </tfoot> */}
                     </table>
+                    <div className="flex flex-row mt-4">
+                         <div className="flex flex-row my-2">
+                              <input
+                                   type="text"
+                                   className="bg-gray-200 text-xs appearance-none border-2 w-full md:w-2/3 ml-2 text-left border-gray-200 rounded-lg py-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                   onChange={(e) => {
+                                        setNewItemName(e.target.value);
+                                   }}
+                                   value={newItemName}
+                                   placeholder="Product Name"
+                              />
+                              <input
+                                   type="text"
+                                   className="bg-gray-200 text-xs appearance-none border-2 w-2/3 ml-2 text-center border-gray-200 rounded-lg py-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                   onChange={(e) => {
+                                        setNewItemQuantity(e.target.value);
+                                   }}
+                                   value={newItemQuantity}
+                                   placeholder="Quantity"
+                              />
+                         </div>
+                         <button
+                              type="button"
+                              onClick={() => {
+                                   addProduct();
+                              }}
+                              className="inline-flex items-center justify-center rounded-md border border-transparent bg-amber-200 px-6 py-2 mx-2 text-sm font-medium text-gray-800 shadow-sm hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 sm:w-auto"
+                         >
+                              Add Item
+                         </button>
+                    </div>
                </div>
           </div>
      );

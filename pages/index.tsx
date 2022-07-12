@@ -25,13 +25,13 @@ const Home: NextPage = () => {
           axios.get(url).then((res) => res.data);
 
      const { data } = useSWR(GET_CONVERSATIONS_URL, conversationsFetcher, {
-          refreshInterval: 2000,
+          refreshInterval: 200000,
      });
 
      const { data: messages } = useSWR(
           `${GET_MESSAGES_URL}${selectedSid}`,
           messagesFetcher,
-          { refreshInterval: 1000 }
+          { refreshInterval: 100000 }
      );
 
      const sendMessage = (sid: string, message: string) => {
