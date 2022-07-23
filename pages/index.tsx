@@ -12,10 +12,19 @@ import {
      GET_MESSAGES_URL,
      REMOVE_CONVERSATION_URL,
      GET_CONVO_NAME_URL,
-     GET_DISPATCH_INFO_URL,
 } from "../constants";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
+     const router = useRouter();
+
+     if (typeof window !== "undefined") {
+          const token = window.localStorage.getItem("jwt");
+          if (token !== "admin") {
+               router.push("/login");
+          }
+     }
+
      const [selectedSid, setSelectedSid] = useState("");
      const [convoName, setConvoName] = useState("");
 

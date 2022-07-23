@@ -21,7 +21,7 @@ const Conversation = (props: ConversationProps) => {
      const [modalOpen, setModalOpen] = useState(false);
      const [name, setName] = useState("");
      const [number, setNumber] = useState("");
-     const [orderSummary, setOrderSummary] = useState(false);
+     const [orderSummary, setOrderSummary] = useState(true);
      const [orderState, setorderState] = useState<any>([]);
 
      const handleSubmit = (e: any) => {
@@ -30,7 +30,7 @@ const Conversation = (props: ConversationProps) => {
                axios.get(
                     `${CREATE_CONVERSATION_URL}${number}&name=${name}`
                ).then((response) => {
-                    setModalOpen(false);
+                    setModalOpen(true);
                });
           } else {
                alert("Invalid phone number");
@@ -58,9 +58,15 @@ const Conversation = (props: ConversationProps) => {
           return await fetchOrder(dispatchData);
      };
 
+     const { data: test } = useSWR("fetchData", fetchData, {
+          refreshInterval: 300000,
+     });
+
+     console.log("swr test", test);
+
      useEffect(() => {
           fetchData();
-     }, []);
+     }, [props.data]);
 
      const validatePhoneNumber = (number: string) => {
           if (validator.isMobilePhone(number, "en-US")) {
@@ -164,7 +170,7 @@ const Conversation = (props: ConversationProps) => {
                                    ))}
                               </>
                          ) : (
-                              <></>
+                              <div>Loading...{orderState.length}</div>
                          )}
                          {props.name !== "" ? (
                               <>

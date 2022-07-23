@@ -1,7 +1,7 @@
 const PROD_URL = "https://supplynownodeapi.herokuapp.com";
 const DEV_URL = "http://localhost:3000";
 
-export const CURRENT_URL = DEV_URL;
+export const CURRENT_URL = PROD_URL;
 
 export const SEND_MESSAGE_URL = `${CURRENT_URL}/api/v1/conversations/sendMessage`;
 export const GET_CONVERSATIONS_URL = `${CURRENT_URL}/api/v1/conversations/getConversations`;

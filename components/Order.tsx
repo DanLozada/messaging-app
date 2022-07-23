@@ -3,6 +3,8 @@ interface OrderProps {
 }
 
 export default function Order(props: OrderProps) {
+     console.log("from order component", props.orderData);
+
      return (
           <div className="px-4 sm:px-6 lg:px-8 border-2 border-amber-300 rounded-lg p-4 mt-2">
                <div className="-mx-4 mt-8 flex flex-col sm:-mx-6 md:mx-0 pb-2">
@@ -24,7 +26,7 @@ export default function Order(props: OrderProps) {
                               </tr>
                          </thead>
                          <tbody>
-                              {props.orderData && (
+                              {props.orderData ? (
                                    <>
                                         {props.orderData.line_items.map(
                                              (product: any) => {
@@ -54,6 +56,8 @@ export default function Order(props: OrderProps) {
                                              }
                                         )}
                                    </>
+                              ) : (
+                                   <div>Loading...</div>
                               )}
                          </tbody>
                     </table>
