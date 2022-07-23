@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import Conversation from "../components/Conversation";
 import ConversationsList from "../components/ConversationsList";
 import InputGroup from "../components/InputGroup";
@@ -12,6 +12,7 @@ import {
      GET_MESSAGES_URL,
      REMOVE_CONVERSATION_URL,
      GET_CONVO_NAME_URL,
+     GET_DISPATCH_INFO_URL,
 } from "../constants";
 
 const Home: NextPage = () => {
@@ -25,20 +26,22 @@ const Home: NextPage = () => {
           axios.get(url).then((res) => res.data);
 
      const { data } = useSWR(GET_CONVERSATIONS_URL, conversationsFetcher, {
-          refreshInterval: 5000,
+          refreshInterval: 300000,
      });
 
-     const { data: messages } = useSWR(
+     const { data: messages, mutate } = useSWR(
           `${GET_MESSAGES_URL}${selectedSid}`,
           messagesFetcher,
-          { refreshInterval: 5000 }
+          { refreshInterval: 100000 }
      );
 
      const sendMessage = (sid: string, message: string) => {
           axios.post(SEND_MESSAGE_URL, {
                sid: sid,
                message: message,
-          }).then(() => {});
+          }).then(() => {
+               mutate(messages);
+          });
      };
 
      const removeConversation = (sid: string) => {
@@ -57,7 +60,11 @@ const Home: NextPage = () => {
                     data={data ? data : "No data yet"}
                     setSelectedSid={setSelectedSid}
                >
-                    <Conversation name={convoName} data={messages} />
+                    <Conversation
+                         name={convoName}
+                         data={messages}
+                         id={selectedSid}
+                    />
                     {selectedSid !== "" ? (
                          <>
                               <InputGroup

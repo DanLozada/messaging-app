@@ -1,28 +1,20 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import validator from "validator";
 import MessageBubble from "./MessageBubble";
 import Order from "./Order";
-import { CURRENT_URL } from "../constants";
-
-const EXAMPLE_DATA = {
-     conversation_sids: [
-          "CH598ce11a127e4a4c85dcf2ae3b8bfdbf",
-          "CH40f94e31bf41430d85be926cfe6475ee",
-     ],
-     delivery_datetime: "Monday at 8am",
-     customer_address: "123 Main St",
-     vendor_addresses: ["123 Main St", "456 Main St"],
-     products: [
-          { item: "apples", quantity: "1" },
-          { item: "bananas", quantity: "2" },
-          { item: "oranges", quantity: "3" },
-     ],
-};
+import { CREATE_CONVERSATION_URL, GET_DISPATCH_INFO_URL } from "../constants";
+import useSWR from "swr";
 
 interface ConversationProps {
      name: string;
-     data: { author: string; sid: string; body: string }[];
+     data: {
+          author: string;
+          sid: string;
+          body: string;
+          conversationSid: string;
+     }[];
+     id: string;
 }
 
 const Conversation = (props: ConversationProps) => {
@@ -30,21 +22,45 @@ const Conversation = (props: ConversationProps) => {
      const [name, setName] = useState("");
      const [number, setNumber] = useState("");
      const [orderSummary, setOrderSummary] = useState(false);
-     console.log(props.data);
+     const [orderState, setorderState] = useState<any>([]);
 
      const handleSubmit = (e: any) => {
           e.preventDefault();
           if (validatePhoneNumber(number)) {
                axios.get(
-                    `${CURRENT_URL}/api/v1/conversations/createConversation?client=${number}&name=${name}`
+                    `${CREATE_CONVERSATION_URL}${number}&name=${name}`
                ).then((response) => {
-                    console.log(response);
                     setModalOpen(false);
                });
           } else {
                alert("Invalid phone number");
           }
      };
+
+     const fetchDispatch = () =>
+          axios
+               .get(`${GET_DISPATCH_INFO_URL}${props.id}`)
+               .then((response) => response.data);
+
+     const fetchOrder = async (orders: any[]) => {
+          await orders.map((order) => {
+               axios.get(
+                    `http://localhost:3000/api/v1/orders/fetch/${order.order_id}`
+               ).then((response) => {
+                    setorderState([...orderState, response.data]);
+               });
+          });
+          return orderState;
+     };
+
+     const fetchData = async () => {
+          const dispatchData = await fetchDispatch();
+          return await fetchOrder(dispatchData);
+     };
+
+     useEffect(() => {
+          fetchData();
+     }, []);
 
      const validatePhoneNumber = (number: string) => {
           if (validator.isMobilePhone(number, "en-US")) {
@@ -53,15 +69,6 @@ const Conversation = (props: ConversationProps) => {
                return false;
           }
      };
-
-     // const fetchData = () => {
-     //      axios.get("someurl?sid=CH598ce11a127e4a4c85dcf2ae3b8bfdbf").then(
-     //           (response) => {
-     //                console.log(response);
-     //           }
-     //      );
-     // };
-     // console.log(props.data);
 
      return (
           <div className="flex flex-col">
@@ -147,7 +154,18 @@ const Conversation = (props: ConversationProps) => {
                     </div>
                ) : (
                     <div>
-                         {orderSummary ? <Order data={EXAMPLE_DATA} /> : <></>}
+                         {orderSummary ? (
+                              <>
+                                   {orderState.map((order: any) => (
+                                        <Order
+                                             orderData={order}
+                                             key={order._id}
+                                        />
+                                   ))}
+                              </>
+                         ) : (
+                              <></>
+                         )}
                          {props.name !== "" ? (
                               <>
                                    <button
