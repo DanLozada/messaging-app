@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Cookies from "cookies-js";
 
 export default function Login() {
      const [user, setUsers] = useState("");
@@ -7,16 +8,10 @@ export default function Login() {
 
      const router = useRouter();
 
-     if (typeof window !== "undefined") {
-          const token = window.localStorage.getItem("jwt");
-          if (token) {
-               router.push("/");
-          }
-     }
-
      const handleLogin = async () => {
           if (user === "admin" && password === "admin") {
-               window.localStorage.setItem("jwt", "admin");
+               // window.localStorage.setItem("jwt", "admin");
+               Cookies.set("jwt", "admin");
                router.push("/");
           } else {
                alert("Invalid credentials");

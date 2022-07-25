@@ -14,16 +14,11 @@ import {
      GET_CONVO_NAME_URL,
 } from "../constants";
 import { useRouter } from "next/router";
+import Cookies from "cookies-js";
+``;
 
 const Home: NextPage = () => {
      const router = useRouter();
-
-     if (typeof window !== "undefined") {
-          const token = window.localStorage.getItem("jwt");
-          if (token !== "admin") {
-               router.push("/login");
-          }
-     }
 
      const [selectedSid, setSelectedSid] = useState("");
      const [convoName, setConvoName] = useState("");
@@ -63,17 +58,26 @@ const Home: NextPage = () => {
           });
      }, [selectedSid]);
 
+     useEffect(() => {
+          const user = Cookies.get("jwt");
+          if (user !== "admin") {
+               router.push("/login");
+          }
+     }, []);
+
      return (
           <>
                <ConversationsList
                     data={data ? data : "No data yet"}
                     setSelectedSid={setSelectedSid}
                >
-                    <Conversation
-                         name={convoName}
-                         data={messages}
-                         id={selectedSid}
-                    />
+                    {messages && (
+                         <Conversation
+                              name={convoName}
+                              data={messages}
+                              id={selectedSid}
+                         />
+                    )}
                     {selectedSid !== "" ? (
                          <>
                               <InputGroup

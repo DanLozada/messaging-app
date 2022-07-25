@@ -14,6 +14,7 @@
     "@tailwindcss/forms": "^0.5.2",
     "@twilio/conversations": "^2.1.0",
     "axios": "^0.27.2",
+    "cookies-js": "^1.2.3",
     "next": "12.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",

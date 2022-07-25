@@ -4,7 +4,6 @@ import validator from "validator";
 import MessageBubble from "./MessageBubble";
 import Order from "./Order";
 import { CREATE_CONVERSATION_URL, GET_DISPATCH_INFO_URL } from "../constants";
-import useSWR from "swr";
 
 interface ConversationProps {
      name: string;
@@ -24,6 +23,8 @@ const Conversation = (props: ConversationProps) => {
      const [orderSummary, setOrderSummary] = useState(true);
      const [orderState, setorderState] = useState<any>([]);
 
+     const conversationSid = props.data[0].conversationSid;
+
      const handleSubmit = (e: any) => {
           e.preventDefault();
           if (validatePhoneNumber(number)) {
@@ -37,36 +38,33 @@ const Conversation = (props: ConversationProps) => {
           }
      };
 
-     const fetchDispatch = () =>
-          axios
-               .get(`${GET_DISPATCH_INFO_URL}${props.id}`)
-               .then((response) => response.data);
+     const fetchDispatchInfo = async (sid: string) => {
+          const response = await axios.get(`${GET_DISPATCH_INFO_URL}${sid}`);
+          return await response.data;
+     };
 
-     const fetchOrder = async (orders: any[]) => {
-          await orders.map((order) => {
-               axios.get(
+     const fetchOrderDetails = async () => {
+          setorderState([]);
+          const orders = await fetchDispatchInfo(conversationSid);
+          await orders.map(async (order: any) => {
+               const response = await axios.get(
                     `http://localhost:3000/api/v1/orders/fetch/${order.order_id}`
-               ).then((response) => {
-                    setorderState([...orderState, response.data]);
-               });
+               );
+               setorderState(response.data);
           });
-          return orderState;
      };
 
-     const fetchData = async () => {
-          const dispatchData = await fetchDispatch();
-          return await fetchOrder(dispatchData);
+     const completeOrder = async (orderId: string) => {
+          const url = `http://localhost:3000/api/v1/mongo/dispatch/update?sid=${conversationSid}&order=${orderId}`;
+          console.log(url);
+          const response = await axios.post(url);
+          console.log(response.data);
+          setOrderSummary(false);
      };
-
-     const { data: test } = useSWR("fetchData", fetchData, {
-          refreshInterval: 300000,
-     });
-
-     console.log("swr test", test);
 
      useEffect(() => {
-          fetchData();
-     }, [props.data]);
+          fetchOrderDetails();
+     }, [props.name, orderSummary]);
 
      const validatePhoneNumber = (number: string) => {
           if (validator.isMobilePhone(number, "en-US")) {
@@ -160,17 +158,11 @@ const Conversation = (props: ConversationProps) => {
                     </div>
                ) : (
                     <div>
-                         {orderSummary ? (
-                              <>
-                                   {orderState.map((order: any) => (
-                                        <Order
-                                             orderData={order}
-                                             key={order._id}
-                                        />
-                                   ))}
-                              </>
-                         ) : (
-                              <div>Loading...{orderState.length}</div>
+                         {orderSummary && (
+                              <Order
+                                   orderData={orderState}
+                                   completeOrder={completeOrder}
+                              />
                          )}
                          {props.name !== "" ? (
                               <>
@@ -178,6 +170,10 @@ const Conversation = (props: ConversationProps) => {
                                         type="button"
                                         onClick={() => {
                                              setOrderSummary(!orderSummary);
+                                             console.log(
+                                                  "Order Summary",
+                                                  orderSummary
+                                             );
                                         }}
                                         className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                                    >

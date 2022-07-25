@@ -1,5 +1,5 @@
 const PROD_URL = "https://supplynownodeapi.herokuapp.com";
-const DEV_URL = "http://localhost:3000";
+const DEV_URL = "http://localhost:8080";
 
 export const CURRENT_URL = PROD_URL;
 
