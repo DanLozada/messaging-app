@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import validator from "validator";
 import MessageBubble from "./MessageBubble";
 import Order from "./Order";
-import { CREATE_CONVERSATION_URL, GET_DISPATCH_INFO_URL } from "../constants";
+import {
+     CREATE_CONVERSATION_URL,
+     GET_DISPATCH_INFO_URL,
+     GET_ORDER_BY_ID_URL,
+     COMPLETE_ORDER_URL,
+} from "../constants";
 
 interface ConversationProps {
      name: string;
@@ -47,15 +52,19 @@ const Conversation = (props: ConversationProps) => {
           setorderState([]);
           const orders = await fetchDispatchInfo(conversationSid);
           await orders.map(async (order: any) => {
-               const response = await axios.get(
-                    `http://localhost:3000/api/v1/orders/fetch/${order.order_id}`
-               );
-               setorderState(response.data);
+               try {
+                    const response = await axios.get(
+                         `${GET_ORDER_BY_ID_URL}${order.order_id}`
+                    );
+                    setorderState(response.data);
+               } catch (error) {
+                    console.log(error);
+               }
           });
      };
 
      const completeOrder = async (orderId: string) => {
-          const url = `http://localhost:3000/api/v1/mongo/dispatch/update?sid=${conversationSid}&order=${orderId}`;
+          const url = `${COMPLETE_ORDER_URL}${conversationSid}&order=${orderId}`;
           console.log(url);
           const response = await axios.post(url);
           console.log(response.data);

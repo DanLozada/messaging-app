@@ -11,3 +11,5 @@ export const GET_CONVO_NAME_URL = `${CURRENT_URL}/api/v1/conversations/getConver
 export const GET_TOKEN_URL = `${CURRENT_URL}/api/v1/conversations/generateToken`;
 export const GET_DISPATCH_INFO_URL = `${CURRENT_URL}/api/v1/mongo/dispatch/getInfo?conversation_sid=`;
 export const CREATE_CONVERSATION_URL = `${CURRENT_URL}/api/v1/conversations/createConversation?client=`;
+export const GET_ORDER_BY_ID_URL = `${CURRENT_URL}/api/v1/orders/fetch/`;
+export const COMPLETE_ORDER_URL = `${CURRENT_URL}/api/v1/mongo/dispatch/update?sid=`;
