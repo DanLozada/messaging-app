@@ -23,12 +23,10 @@ interface ConversationProps {
 
 const Conversation = (props: ConversationProps) => {
      const [modalOpen, setModalOpen] = useState(false);
-     const [name, setName] = useState("");
-     const [number, setNumber] = useState("");
      const [orderSummary, setOrderSummary] = useState(true);
      const [orderState, setorderState] = useState<any>([]);
 
-     const conversationSid = props.data[0].conversationSid;
+     const conversationSid = props.id;
 
      const fetchDispatchInfo = async (sid: string) => {
           const response = await axios.get(`${GET_DISPATCH_INFO_URL}${sid}`);
@@ -37,17 +35,23 @@ const Conversation = (props: ConversationProps) => {
 
      const fetchOrderDetails = async () => {
           setorderState([]);
-          const orders = await fetchDispatchInfo(conversationSid);
-          await orders.map(async (order: any) => {
-               try {
-                    const response = await axios.get(
-                         `${GET_ORDER_BY_ID_URL}${order.order_id}`
-                    );
-                    setorderState(response.data);
-               } catch (error) {
-                    console.log(error);
-               }
-          });
+          try {
+               const orders = await fetchDispatchInfo(conversationSid);
+               console.log(conversationSid);
+               await orders.map(async (order: any) => {
+                    try {
+                         const response = await axios.get(
+                              `${GET_ORDER_BY_ID_URL}${order.order_id}`
+                         );
+                         setorderState(response.data);
+                         // console.log(response.data);
+                    } catch (error) {
+                         console.log(error);
+                    }
+               });
+          } catch (error) {
+               console.log(error);
+          }
      };
 
      const completeOrder = async (orderId: string) => {
