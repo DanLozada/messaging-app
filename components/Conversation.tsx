@@ -7,6 +7,7 @@ import {
      GET_DISPATCH_INFO_URL,
      GET_ORDER_BY_ID_URL,
      COMPLETE_ORDER_URL,
+     ADD_DISPATCH_MODIFICATION_URL,
 } from "../constants";
 import CreateConversation from "./CreateConversation";
 
@@ -37,7 +38,6 @@ const Conversation = (props: ConversationProps) => {
           setorderState([]);
           try {
                const orders = await fetchDispatchInfo(conversationSid);
-               console.log(conversationSid);
                await orders.map(async (order: any) => {
                     try {
                          const response = await axios.get(
@@ -60,6 +60,18 @@ const Conversation = (props: ConversationProps) => {
           const response = await axios.post(url);
           console.log(response.data);
           setOrderSummary(false);
+     };
+
+     const addModification = async (orderId: string, message: string) => {
+          try {
+               const url = `${ADD_DISPATCH_MODIFICATION_URL}${orderId}`;
+               const response = await axios.post(url, {
+                    modification: message,
+               });
+               console.log(response.data);
+          } catch (error) {
+               console.log(error);
+          }
      };
 
      useEffect(() => {
@@ -103,6 +115,7 @@ const Conversation = (props: ConversationProps) => {
                     <div>
                          {orderSummary && (
                               <Order
+                                   addModification={addModification}
                                    orderData={orderState}
                                    completeOrder={completeOrder}
                               />

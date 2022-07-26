@@ -13,3 +13,4 @@ export const GET_DISPATCH_INFO_URL = `${CURRENT_URL}/api/v1/mongo/dispatch/getIn
 export const CREATE_CONVERSATION_URL = `${CURRENT_URL}/api/v1/conversations/createConversation?client=`;
 export const GET_ORDER_BY_ID_URL = `${CURRENT_URL}/api/v1/orders/fetch/`;
 export const COMPLETE_ORDER_URL = `${CURRENT_URL}/api/v1/mongo/dispatch/update?sid=`;
+export const ADD_DISPATCH_MODIFICATION_URL = `${CURRENT_URL}/api/v1/mongo/dispatch/modify?order=`;
