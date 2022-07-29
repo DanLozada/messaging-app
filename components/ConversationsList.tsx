@@ -8,7 +8,7 @@ interface ConversationsListProps {
      setSelectedSid: (sid: string) => void;
 }
 
-export default function Example(props: ConversationsListProps) {
+export default function ConversationsList(props: ConversationsListProps) {
      const [sidebarOpen, setSidebarOpen] = useState(false);
 
      return (
@@ -77,27 +77,28 @@ export default function Example(props: ConversationsListProps) {
                                                   <div className="mt-5 flex-1 h-0 overflow-y-auto">
                                                        <nav className="px-2 space-y-1">
                                                             <>
-                                                                 {props.data.map(
-                                                                      (
-                                                                           item: any
-                                                                      ) => (
-                                                                           <a
-                                                                                key={
-                                                                                     item.sid
-                                                                                }
-                                                                                onClick={() =>
-                                                                                     props.setSelectedSid(
+                                                                 {props.data &&
+                                                                      props.data.map(
+                                                                           (
+                                                                                item: any
+                                                                           ) => (
+                                                                                <a
+                                                                                     key={
                                                                                           item.sid
-                                                                                     )
-                                                                                }
-                                                                                className="text-gray-600 bg-amber-200 hover:bg-amber-400 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                                           >
-                                                                                {
-                                                                                     item.friendlyName
-                                                                                }
-                                                                           </a>
-                                                                      )
-                                                                 )}
+                                                                                     }
+                                                                                     onClick={() =>
+                                                                                          props.setSelectedSid(
+                                                                                               item.sid
+                                                                                          )
+                                                                                     }
+                                                                                     className="text-gray-600 bg-amber-200 hover:bg-amber-400 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                                                >
+                                                                                     {
+                                                                                          item.friendlyName
+                                                                                     }
+                                                                                </a>
+                                                                           )
+                                                                      )}
                                                             </>
                                                        </nav>
                                                   </div>

@@ -1,50 +1,37 @@
-import type { NextPage } from "next";
-import useSWR from "swr";
-import Conversation from "../components/Conversation";
+import {
+     GET_TWILIO_TOKEN_URL,
+     REMOVE_CONVERSATION_URL,
+     SEND_MESSAGE_URL,
+} from "../constants";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Client } from "@twilio/conversations";
 import ConversationsList from "../components/ConversationsList";
 import InputGroup from "../components/InputGroup";
 import Welcome from "../components/Welcome";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import {
-     SEND_MESSAGE_URL,
-     GET_CONVERSATIONS_URL,
-     GET_MESSAGES_URL,
-     REMOVE_CONVERSATION_URL,
-     GET_CONVO_NAME_URL,
-} from "../constants";
-import { useRouter } from "next/router";
-import Cookies from "cookies-js";
-``;
+import Conversation from "../components/Conversation";
 
-const Home: NextPage = () => {
-     const router = useRouter();
+const Sdk = () => {
+     const [conversations, setConversations] = useState<any[]>([]);
+     const [selectedConvo, setSelectedConvo] = useState<any>();
+     const [selectedSid, setSelectedSid] = useState<string>("");
 
-     const [selectedSid, setSelectedSid] = useState("");
-     const [convoName, setConvoName] = useState("");
-
-     const conversationsFetcher = (url: string) =>
-          axios.get(url).then((res) => res.data);
-
-     const messagesFetcher = (url: string) =>
-          axios.get(url).then((res) => res.data);
-
-     const { data } = useSWR(GET_CONVERSATIONS_URL, conversationsFetcher, {
-          refreshInterval: 300000,
-     });
-
-     const { data: messages, mutate } = useSWR(
-          `${GET_MESSAGES_URL}${selectedSid}`,
-          messagesFetcher,
-          { refreshInterval: 100000 }
-     );
+     const getConversations = async (client: any) => {
+          const res = await client.on("conversationJoined", (convo: any) => {
+               setConversations((prevConversations) => [
+                    ...prevConversations,
+                    convo,
+               ]);
+               console.log(convo);
+          });
+     };
 
      const sendMessage = (sid: string, message: string) => {
           axios.post(SEND_MESSAGE_URL, {
                sid: sid,
                message: message,
           }).then(() => {
-               mutate(messages);
+               console.log("Message sent");
           });
      };
 
@@ -52,30 +39,59 @@ const Home: NextPage = () => {
           axios.get(`${REMOVE_CONVERSATION_URL}${sid}`).then((res) => {});
      };
 
-     useEffect(() => {
-          axios.get(`${GET_CONVO_NAME_URL}${selectedSid}`).then((response) => {
-               setConvoName(response.data);
-          });
-     }, [selectedSid]);
+     const [messages, setMessages] = useState<any[]>([]);
+
+     const getMessages = async (conversation: any) => {
+          if (conversation) {
+               const lol = await conversation.getMessages();
+               setMessages([...lol.items]);
+
+               conversation.on("messageAdded", (message: any) => {
+                    if (messages.find((m: any) => m.sid === message.sid)) {
+                         return;
+                    }
+                    setMessages((messages) => [...messages, message]);
+               });
+          }
+     };
+
+     const getToken = async () => {
+          const res = await axios.get(GET_TWILIO_TOKEN_URL);
+          return res.data;
+     };
+
+     const handleSelectConversation = async (sid: any) => {
+          setSelectedSid(sid);
+          await getMessages(selectedConvo);
+     };
 
      useEffect(() => {
-          const user = Cookies.get("jwt");
-          if (user !== "admin") {
-               router.push("/login");
-          }
+          getToken().then((token: string) => {
+               const client = new Client(token);
+               getConversations(client);
+          });
      }, []);
 
      return (
           <>
                <ConversationsList
-                    data={data ? data : "No data yet"}
-                    setSelectedSid={setSelectedSid}
+                    data={conversations}
+                    setSelectedSid={(sid: string) => {
+                         handleSelectConversation(sid);
+                         setSelectedConvo(
+                              conversations.find(
+                                   (convo: any) => convo.sid === sid
+                              )
+                         );
+                    }}
                >
-                    {messages && (
+                    {/* {selectedConvo && <Convo conversation={selectedConvo} />} */}
+                    {selectedConvo && (
                          <Conversation
-                              name={convoName}
+                              name={selectedConvo.friendlyName}
                               data={messages}
-                              id={selectedSid}
+                              conversation={selectedConvo}
+                              id={selectedConvo.sid}
                          />
                     )}
                     {selectedSid !== "" ? (
@@ -97,4 +113,4 @@ const Home: NextPage = () => {
      );
 };
 
-export default Home;
+export default Sdk;

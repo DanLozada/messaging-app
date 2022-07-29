@@ -14,3 +14,4 @@ export const CREATE_CONVERSATION_URL = `${CURRENT_URL}/api/v1/conversations/crea
 export const GET_ORDER_BY_ID_URL = `${CURRENT_URL}/api/v1/orders/fetch/`;
 export const COMPLETE_ORDER_URL = `${CURRENT_URL}/api/v1/mongo/dispatch/update?sid=`;
 export const ADD_DISPATCH_MODIFICATION_URL = `${CURRENT_URL}/api/v1/mongo/dispatch/modify?order=`;
+export const GET_TWILIO_TOKEN_URL = `${CURRENT_URL}/api/v1/conversations/generateToken`;

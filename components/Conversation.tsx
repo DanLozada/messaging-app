@@ -12,20 +12,33 @@ import {
 import CreateConversation from "./CreateConversation";
 
 interface ConversationProps {
-     name: string;
-     data: {
+     name?: string;
+     data?: {
           author: string;
           sid: string;
           body: string;
           conversationSid: string;
      }[];
-     id: string;
+     id?: string;
+     conversation?: any;
 }
 
 const Conversation = (props: ConversationProps) => {
      const [modalOpen, setModalOpen] = useState(false);
      const [orderSummary, setOrderSummary] = useState(true);
      const [orderState, setorderState] = useState<any>([]);
+     const [messages, setMessages] = useState<any[]>([]);
+
+     const getMessages = async (conversation: any) => {
+          if (conversation) {
+               const lol = await conversation.getMessages();
+               setMessages([...lol.items]);
+
+               conversation.on("messageAdded", (message: any) => {
+                    setMessages((messages) => [...messages, message]);
+               });
+          }
+     };
 
      const conversationSid = props.id;
 
@@ -37,14 +50,13 @@ const Conversation = (props: ConversationProps) => {
      const fetchOrderDetails = async () => {
           setorderState([]);
           try {
-               const orders = await fetchDispatchInfo(conversationSid);
+               const orders = await fetchDispatchInfo(props.conversation.sid);
                await orders.map(async (order: any) => {
                     try {
                          const response = await axios.get(
                               `${GET_ORDER_BY_ID_URL}${order.order_id}`
                          );
                          setorderState(response.data);
-                         // console.log(response.data);
                     } catch (error) {
                          console.log(error);
                     }
@@ -56,9 +68,7 @@ const Conversation = (props: ConversationProps) => {
 
      const completeOrder = async (orderId: string) => {
           const url = `${COMPLETE_ORDER_URL}${conversationSid}&order=${orderId}`;
-          console.log(url);
           const response = await axios.post(url);
-          console.log(response.data);
           setOrderSummary(false);
      };
 
@@ -68,7 +78,6 @@ const Conversation = (props: ConversationProps) => {
                const response = await axios.post(url, {
                     modification: message,
                });
-               console.log(response.data);
           } catch (error) {
                console.log(error);
           }
@@ -76,6 +85,7 @@ const Conversation = (props: ConversationProps) => {
 
      useEffect(() => {
           fetchOrderDetails();
+          getMessages(props.conversation);
      }, [props.name, orderSummary]);
 
      return (
@@ -126,19 +136,15 @@ const Conversation = (props: ConversationProps) => {
                                         type="button"
                                         onClick={() => {
                                              setOrderSummary(!orderSummary);
-                                             console.log(
-                                                  "Order Summary",
-                                                  orderSummary
-                                             );
                                         }}
                                         className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                                    >
                                         Toggle Summary
                                    </button>
                                    <div className="flex flex-col justify-end h-full">
-                                        {props.data !== undefined ? (
+                                        {messages !== undefined ? (
                                              <>
-                                                  {props.data.map((message) => (
+                                                  {messages.map((message) => (
                                                        <MessageBubble
                                                             key={message.sid}
                                                             message={message}
