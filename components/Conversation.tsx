@@ -12,15 +12,7 @@ import {
 import CreateConversation from "./CreateConversation";
 
 interface ConversationProps {
-     name?: string;
-     data?: {
-          author: string;
-          sid: string;
-          body: string;
-          conversationSid: string;
-     }[];
-     id?: string;
-     conversation?: any;
+     conversation: any;
 }
 
 const Conversation = (props: ConversationProps) => {
@@ -39,8 +31,6 @@ const Conversation = (props: ConversationProps) => {
                });
           }
      };
-
-     const conversationSid = props.id;
 
      const fetchDispatchInfo = async (sid: string) => {
           const response = await axios.get(`${GET_DISPATCH_INFO_URL}${sid}`);
@@ -67,7 +57,7 @@ const Conversation = (props: ConversationProps) => {
      };
 
      const completeOrder = async (orderId: string) => {
-          const url = `${COMPLETE_ORDER_URL}${conversationSid}&order=${orderId}`;
+          const url = `${COMPLETE_ORDER_URL}${props.conversation.sid}&order=${orderId}`;
           const response = await axios.post(url);
           setOrderSummary(false);
      };
@@ -86,81 +76,45 @@ const Conversation = (props: ConversationProps) => {
      useEffect(() => {
           fetchOrderDetails();
           getMessages(props.conversation);
-     }, [props.name, orderSummary]);
+     }, [props.conversation]);
 
      return (
           <div className="flex flex-col">
                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex flex-row mb-8">
-                    {props.name !== "" ? (
-                         <div className="fixed top-16 left-24 md:top-4 md:left-72 bg-white p-4 rounded-xl shadow-xl md:w-1/3">
-                              <h1 className="text-lg font-bold">
-                                   {props.name}
-                              </h1>
-                         </div>
-                    ) : (
-                         <></>
-                    )}
-                    <div className="absolute right-8 top-9">
-                         <a onClick={() => setModalOpen(!modalOpen)}>
-                              <svg
-                                   xmlns="http://www.w3.org/2000/svg"
-                                   className="h-10 w-10"
-                                   fill="none"
-                                   viewBox="0 0 24 24"
-                                   stroke="currentColor"
-                                   strokeWidth={2}
-                              >
-                                   <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                                   />
-                              </svg>
-                         </a>
+                    <div className="fixed top-16 left-24 md:top-4 md:left-72 bg-white p-4 rounded-xl shadow-xl md:w-1/3">
+                         <h1 className="text-lg font-bold">
+                              {props.conversation.friendlyName}
+                         </h1>
                     </div>
                </div>
-               {modalOpen ? (
-                    <CreateConversation setModalOpen={setModalOpen} />
-               ) : (
-                    <div>
-                         {orderSummary && (
-                              <Order
-                                   addModification={addModification}
-                                   orderData={orderState}
-                                   completeOrder={completeOrder}
-                              />
-                         )}
-                         {props.name !== "" ? (
-                              <>
-                                   <button
-                                        type="button"
-                                        onClick={() => {
-                                             setOrderSummary(!orderSummary);
-                                        }}
-                                        className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-                                   >
-                                        Toggle Summary
-                                   </button>
-                                   <div className="flex flex-col justify-end h-full">
-                                        {messages !== undefined ? (
-                                             <>
-                                                  {messages.map((message) => (
-                                                       <MessageBubble
-                                                            key={message.sid}
-                                                            message={message}
-                                                       />
-                                                  ))}
-                                             </>
-                                        ) : (
-                                             <></>
-                                        )}
-                                   </div>
-                              </>
-                         ) : (
-                              <></>
-                         )}
-                    </div>
-               )}
+               <div>
+                    {orderSummary && (
+                         <Order
+                              addModification={addModification}
+                              orderData={orderState}
+                              completeOrder={completeOrder}
+                         />
+                    )}
+                    <>
+                         <button
+                              type="button"
+                              onClick={() => {
+                                   setOrderSummary(!orderSummary);
+                              }}
+                              className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-800 bg-amber-400 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                         >
+                              Toggle Summary
+                         </button>
+                         <div className="flex flex-col justify-end h-full">
+                              {messages.map((message) => (
+                                   <MessageBubble
+                                        key={message.sid}
+                                        message={message}
+                                   />
+                              ))}
+                         </div>
+                    </>
+               </div>
           </div>
      );
 };

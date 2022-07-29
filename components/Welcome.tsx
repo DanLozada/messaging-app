@@ -7,23 +7,20 @@ function classNames(...classes: string[]) {
      return classes.filter(Boolean).join(" ");
 }
 
-export default function Welcome() {
-     const [createConversationOpen, setCreateConversationOpen] =
-          useState(false);
+export default function Welcome(props: any) {
+     const [addConvo, setAddConvo] = useState(false);
 
      const items = [
           {
                name: "Browse Existing Conversations",
-               description:
-                    "Clients that placed orders throught the automated text-line have existing conversations, so Start Here!",
+               description: "Some text that is helpful",
                href: "#",
                iconColor: "bg-amber-400",
                icon: MenuIcon,
           },
           {
                name: "Create a Conversation",
-               description:
-                    "You should really only use this to create chats with drivers",
+               description: "You'll need their name and number",
                href: "#",
                iconColor: "bg-amber-400",
                icon: UserAddIcon,
@@ -32,17 +29,13 @@ export default function Welcome() {
 
      const handleClick = (name: string) => {
           if (name === "Create a Conversation") {
-               setCreateConversationOpen(true);
+               setAddConvo(true);
           }
      };
 
      return (
           <div className="max-w-lg mx-auto">
-               {createConversationOpen ? (
-                    <CreateConversation
-                         setModalOpen={setCreateConversationOpen}
-                    />
-               ) : (
+               {!addConvo ? (
                     <>
                          <h2 className="text-lg font-medium text-gray-900">
                               Welcome to SupplyNow Dispatch
@@ -94,6 +87,13 @@ export default function Welcome() {
                                    </li>
                               ))}
                          </ul>
+                    </>
+               ) : (
+                    <>
+                         <CreateConversation
+                              createConversation={props.createConversation}
+                              setModalOpen={setAddConvo}
+                         />
                     </>
                )}
           </div>

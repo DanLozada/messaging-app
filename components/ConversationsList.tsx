@@ -1,15 +1,19 @@
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
+import CreateConversation from "./CreateConversation";
 
 interface ConversationsListProps {
      children: any;
      data: any;
-     setSelectedSid: (sid: string) => void;
+     setSelectedConvo: (convo: any) => void;
+     createConversation: (number: string, name: string) => void;
 }
 
 export default function ConversationsList(props: ConversationsListProps) {
      const [sidebarOpen, setSidebarOpen] = useState(false);
+     const [createNewConversations, setCreateNewConversations] =
+          useState(false);
 
      return (
           <>
@@ -77,6 +81,17 @@ export default function ConversationsList(props: ConversationsListProps) {
                                                   <div className="mt-5 flex-1 h-0 overflow-y-auto">
                                                        <nav className="px-2 space-y-1">
                                                             <>
+                                                                 <a
+                                                                      onClick={() =>
+                                                                           setCreateNewConversations(
+                                                                                true
+                                                                           )
+                                                                      }
+                                                                      className="text-gray-600 bg-amber-200 hover:bg-amber-400 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                                 >
+                                                                      Create
+                                                                      Conversation
+                                                                 </a>
                                                                  {props.data &&
                                                                       props.data.map(
                                                                            (
@@ -86,11 +101,14 @@ export default function ConversationsList(props: ConversationsListProps) {
                                                                                      key={
                                                                                           item.sid
                                                                                      }
-                                                                                     onClick={() =>
-                                                                                          props.setSelectedSid(
-                                                                                               item.sid
-                                                                                          )
-                                                                                     }
+                                                                                     onClick={() => {
+                                                                                          props.setSelectedConvo(
+                                                                                               item
+                                                                                          );
+                                                                                          setCreateNewConversations(
+                                                                                               false
+                                                                                          );
+                                                                                     }}
                                                                                      className="text-gray-600 bg-amber-200 hover:bg-amber-400 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                                                 >
                                                                                      {
@@ -132,8 +150,8 @@ export default function ConversationsList(props: ConversationsListProps) {
                                                             <a
                                                                  key={item.sid}
                                                                  onClick={() =>
-                                                                      props.setSelectedSid(
-                                                                           item.sid
+                                                                      props.setSelectedConvo(
+                                                                           item
                                                                       )
                                                                  }
                                                                  className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md bg-amber-200"
@@ -178,7 +196,20 @@ export default function ConversationsList(props: ConversationsListProps) {
                                                   </a>
                                              </div>
                                         </div>
-                                        {props.children}
+                                        {createNewConversations ? (
+                                             <>
+                                                  <CreateConversation
+                                                       createConversation={
+                                                            props.createConversation
+                                                       }
+                                                       setModalOpen={
+                                                            setCreateNewConversations
+                                                       }
+                                                  />
+                                             </>
+                                        ) : (
+                                             <>{props.children}</>
+                                        )}
                                    </div>
                               </div>
                          </main>

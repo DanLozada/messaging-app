@@ -10,11 +10,12 @@ const CreateConversation = (props: any) => {
      const handleSubmit = (e: any) => {
           e.preventDefault();
           if (validatePhoneNumber(number)) {
-               axios.get(
-                    `${CREATE_CONVERSATION_URL}${number}&name=${name}`
-               ).then((response) => {
-                    props.setModalOpen(true);
-               });
+               props.createConversation(number, name);
+               // axios.get(
+               //      `${CREATE_CONVERSATION_URL}${number}&name=${name}`
+               // ).then((response) => {
+               //      props.setModalOpen(false);
+               // });
           } else {
                alert("Invalid phone number");
           }

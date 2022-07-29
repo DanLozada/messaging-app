@@ -15,44 +15,33 @@ const Sdk = () => {
      const [conversations, setConversations] = useState<any[]>([]);
      const [selectedConvo, setSelectedConvo] = useState<any>();
      const [selectedSid, setSelectedSid] = useState<string>("");
+     const [client, setClient] = useState<any>();
 
      const getConversations = async (client: any) => {
-          const res = await client.on("conversationJoined", (convo: any) => {
+          await client.on("conversationJoined", (convo: any) => {
                setConversations((prevConversations) => [
                     ...prevConversations,
                     convo,
                ]);
                console.log(convo);
           });
-     };
 
-     const sendMessage = (sid: string, message: string) => {
-          axios.post(SEND_MESSAGE_URL, {
-               sid: sid,
-               message: message,
-          }).then(() => {
-               console.log("Message sent");
+          await client.on("conversationLeft", (convo: any) => {
+               setConversations((prevConversations) =>
+                    prevConversations.filter((c) => c.sid !== convo.sid)
+               );
           });
      };
 
-     const removeConversation = (sid: string) => {
-          axios.get(`${REMOVE_CONVERSATION_URL}${sid}`).then((res) => {});
+     const sendMessage = (message: string) => {
+          selectedConvo.sendMessage(message);
      };
 
-     const [messages, setMessages] = useState<any[]>([]);
-
-     const getMessages = async (conversation: any) => {
-          if (conversation) {
-               const lol = await conversation.getMessages();
-               setMessages([...lol.items]);
-
-               conversation.on("messageAdded", (message: any) => {
-                    if (messages.find((m: any) => m.sid === message.sid)) {
-                         return;
-                    }
-                    setMessages((messages) => [...messages, message]);
-               });
-          }
+     const removeConversation = async () => {
+          await axios
+               .get(`${REMOVE_CONVERSATION_URL}${selectedConvo.sid}`)
+               .then((res) => {});
+          setSelectedConvo(undefined);
      };
 
      const getToken = async () => {
@@ -60,15 +49,32 @@ const Sdk = () => {
           return res.data;
      };
 
-     const handleSelectConversation = async (sid: any) => {
-          setSelectedSid(sid);
-          await getMessages(selectedConvo);
+     const handleCreateConversation = async (number: string, name: string) => {
+          client
+               .createConversation({
+                    friendlyName: name,
+                    attributes: {
+                         phoneNumber: number,
+                    },
+               })
+               .then((conversation: any) => {
+                    console.log(conversation);
+                    conversation.add("Tack");
+                    conversation.addNonChatParticipant(
+                         "+13512089170",
+                         `+1${number}`
+                    );
+               })
+               .catch((err: any) => {
+                    console.log(err);
+               });
      };
 
      useEffect(() => {
           getToken().then((token: string) => {
                const client = new Client(token);
                getConversations(client);
+               setClient(client);
           });
      }, []);
 
@@ -76,37 +82,30 @@ const Sdk = () => {
           <>
                <ConversationsList
                     data={conversations}
-                    setSelectedSid={(sid: string) => {
-                         handleSelectConversation(sid);
-                         setSelectedConvo(
-                              conversations.find(
-                                   (convo: any) => convo.sid === sid
-                              )
-                         );
+                    createConversation={handleCreateConversation}
+                    setSelectedConvo={(convo: any) => {
+                         setSelectedConvo(convo);
                     }}
                >
-                    {/* {selectedConvo && <Convo conversation={selectedConvo} />} */}
-                    {selectedConvo && (
-                         <Conversation
-                              name={selectedConvo.friendlyName}
-                              data={messages}
-                              conversation={selectedConvo}
-                              id={selectedConvo.sid}
-                         />
-                    )}
-                    {selectedSid !== "" ? (
+                    {selectedConvo ? (
                          <>
+                              <Conversation conversation={selectedConvo} />
                               <InputGroup
                                    sendMessage={(message: string) =>
-                                        sendMessage(selectedSid, message)
+                                        sendMessage(message)
                                    }
                                    removeConversation={() =>
-                                        removeConversation(selectedSid)
+                                        removeConversation()
                                    }
                               />
                          </>
                     ) : (
-                         <Welcome />
+                         <Welcome
+                              createConversation={handleCreateConversation}
+                              setSelectedConvo={(convo: any) => {
+                                   setSelectedConvo(convo);
+                              }}
+                         />
                     )}
                </ConversationsList>
           </>
