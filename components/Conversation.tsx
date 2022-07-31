@@ -16,10 +16,10 @@ interface ConversationProps {
 }
 
 const Conversation = (props: ConversationProps) => {
-     const [modalOpen, setModalOpen] = useState(false);
      const [orderSummary, setOrderSummary] = useState(true);
-     const [orderState, setorderState] = useState<any>([]);
+     const [orderState, setOrderState] = useState<any>([]);
      const [messages, setMessages] = useState<any[]>([]);
+     const [dispatchInfo, setDispatchInfo] = useState<any>([]);
 
      const getMessages = async (conversation: any) => {
           if (conversation) {
@@ -34,11 +34,12 @@ const Conversation = (props: ConversationProps) => {
 
      const fetchDispatchInfo = async (sid: string) => {
           const response = await axios.get(`${GET_DISPATCH_INFO_URL}${sid}`);
+          setDispatchInfo(response.data);
           return await response.data;
      };
 
      const fetchOrderDetails = async () => {
-          setorderState([]);
+          setOrderState([]);
           try {
                const orders = await fetchDispatchInfo(props.conversation.sid);
                await orders.map(async (order: any) => {
@@ -46,7 +47,7 @@ const Conversation = (props: ConversationProps) => {
                          const response = await axios.get(
                               `${GET_ORDER_BY_ID_URL}${order.order_id}`
                          );
-                         setorderState(response.data);
+                         setOrderState(response.data);
                     } catch (error) {
                          console.log(error);
                     }
@@ -58,8 +59,13 @@ const Conversation = (props: ConversationProps) => {
 
      const completeOrder = async (orderId: string) => {
           const url = `${COMPLETE_ORDER_URL}${props.conversation.sid}&order=${orderId}`;
-          const response = await axios.post(url);
-          setOrderSummary(false);
+          try {
+               const response = await axios.post(url);
+               fetchOrderDetails();
+               setOrderSummary(false);
+          } catch (error) {
+               console.log(error);
+          }
      };
 
      const addModification = async (orderId: string, message: string) => {
@@ -68,6 +74,7 @@ const Conversation = (props: ConversationProps) => {
                const response = await axios.post(url, {
                     modification: message,
                });
+               fetchDispatchInfo(props.conversation.sid);
           } catch (error) {
                console.log(error);
           }
@@ -93,6 +100,7 @@ const Conversation = (props: ConversationProps) => {
                               addModification={addModification}
                               orderData={orderState}
                               completeOrder={completeOrder}
+                              dispatchInfo={dispatchInfo}
                          />
                     )}
                     <>

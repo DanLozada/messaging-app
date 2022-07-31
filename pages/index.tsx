@@ -1,8 +1,4 @@
-import {
-     GET_TWILIO_TOKEN_URL,
-     REMOVE_CONVERSATION_URL,
-     SEND_MESSAGE_URL,
-} from "../constants";
+import { GET_TWILIO_TOKEN_URL, REMOVE_CONVERSATION_URL } from "../constants";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Client } from "@twilio/conversations";
@@ -14,7 +10,6 @@ import Conversation from "../components/Conversation";
 const Sdk = () => {
      const [conversations, setConversations] = useState<any[]>([]);
      const [selectedConvo, setSelectedConvo] = useState<any>();
-     const [selectedSid, setSelectedSid] = useState<string>("");
      const [client, setClient] = useState<any>();
 
      const getConversations = async (client: any) => {

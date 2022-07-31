@@ -141,6 +141,16 @@ export default function ConversationsList(props: ConversationsListProps) {
                          <div className="flex flex-col flex-grow border-r border-gray-200 pt-5 bg-white overflow-y-auto">
                               <div className="mt-5 flex-grow flex flex-col">
                                    <nav className="flex-1 px-2 pb-4 space-y-1">
+                                        <a
+                                             onClick={() =>
+                                                  setCreateNewConversations(
+                                                       true
+                                                  )
+                                             }
+                                             className="text-gray-600 bg-amber-200 hover:bg-amber-400 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                        >
+                                             Create Conversation
+                                        </a>
                                         {props.data == "No data yet" ? (
                                              <>No data yet</>
                                         ) : (
@@ -149,11 +159,14 @@ export default function ConversationsList(props: ConversationsListProps) {
                                                        (item: any) => (
                                                             <a
                                                                  key={item.sid}
-                                                                 onClick={() =>
+                                                                 onClick={() => {
                                                                       props.setSelectedConvo(
                                                                            item
-                                                                      )
-                                                                 }
+                                                                      );
+                                                                      setCreateNewConversations(
+                                                                           false
+                                                                      );
+                                                                 }}
                                                                  className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md bg-amber-200"
                                                             >
                                                                  {

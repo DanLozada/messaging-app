@@ -3,6 +3,7 @@ interface OrderProps {
      orderData: any;
      completeOrder: (orderId: string) => void;
      addModification: (orderId: string, dispatchId: string) => void;
+     dispatchInfo: any[];
 }
 
 export default function Order(props: OrderProps) {
@@ -29,7 +30,7 @@ export default function Order(props: OrderProps) {
                               }
                               className="inline-flex ml-20 mt-4 items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-800 bg-green-400 hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                          >
-                              Add Modification
+                              Modifications
                          </button>
                          {!addModification ? (
                               <div className="-mx-4 mt-8 flex flex-col sm:-mx-6 md:mx-0 pb-2">
@@ -95,6 +96,14 @@ export default function Order(props: OrderProps) {
                                                        e.target.value
                                                   );
                                              }}
+                                             onKeyDown={(e) => {
+                                                  if (e.key === "Enter") {
+                                                       props.addModification(
+                                                            props.orderData._id,
+                                                            modificationText
+                                                       );
+                                                  }
+                                             }}
                                              placeholder="What changes do you want to make?"
                                         />
                                    </div>
@@ -110,6 +119,29 @@ export default function Order(props: OrderProps) {
                                    >
                                         Submit
                                    </button>
+                                   <div className="mt-4 text-center">
+                                        {props.dispatchInfo[0].modification
+                                             .length > 0 ? (
+                                             <>
+                                                  {props.dispatchInfo[0].modification.map(
+                                                       (
+                                                            modification: any,
+                                                            idx: number
+                                                       ) => {
+                                                            return (
+                                                                 <h1 key={idx}>
+                                                                      {
+                                                                           modification
+                                                                      }
+                                                                 </h1>
+                                                            );
+                                                       }
+                                                  )}
+                                             </>
+                                        ) : (
+                                             <h1>No modifications</h1>
+                                        )}
+                                   </div>
                               </>
                          )}
                     </>

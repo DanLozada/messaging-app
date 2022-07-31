@@ -1,6 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
-import { CREATE_CONVERSATION_URL } from "../constants";
 import validator from "validator";
 
 const CreateConversation = (props: any) => {
@@ -11,11 +9,6 @@ const CreateConversation = (props: any) => {
           e.preventDefault();
           if (validatePhoneNumber(number)) {
                props.createConversation(number, name);
-               // axios.get(
-               //      `${CREATE_CONVERSATION_URL}${number}&name=${name}`
-               // ).then((response) => {
-               //      props.setModalOpen(false);
-               // });
           } else {
                alert("Invalid phone number");
           }
