@@ -9,7 +9,6 @@ import {
      COMPLETE_ORDER_URL,
      ADD_DISPATCH_MODIFICATION_URL,
 } from "../constants";
-import CreateConversation from "./CreateConversation";
 
 interface ConversationProps {
      conversation: any;

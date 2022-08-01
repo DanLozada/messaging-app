@@ -44,12 +44,15 @@ const Sdk = () => {
           return res.data;
      };
 
-     const handleCreateConversation = async (number: string, name: string) => {
+     const handleCreateConversation = async (
+          phoneNumber: string,
+          name: string
+     ) => {
           client
                .createConversation({
                     friendlyName: name,
                     attributes: {
-                         phoneNumber: number,
+                         phoneNumber: phoneNumber,
                     },
                })
                .then((conversation: any) => {
@@ -57,11 +60,11 @@ const Sdk = () => {
                     conversation.add("Tack");
                     conversation.addNonChatParticipant(
                          "+13512089170",
-                         `+1${number}`
+                         `+1${phoneNumber}`
                     );
                })
                .catch((err: any) => {
-                    console.log(err);
+                    alert(err);
                });
      };
 

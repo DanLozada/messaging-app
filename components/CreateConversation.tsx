@@ -1,7 +1,12 @@
 import { useState } from "react";
 import validator from "validator";
 
-const CreateConversation = (props: any) => {
+interface CreateConversationProps {
+     createConversation: (number: string, name: string) => void;
+     setModalOpen: (boolean: boolean) => void;
+}
+
+const CreateConversation = (props: CreateConversationProps) => {
      const [name, setName] = useState("");
      const [number, setNumber] = useState("");
 
@@ -9,6 +14,9 @@ const CreateConversation = (props: any) => {
           e.preventDefault();
           if (validatePhoneNumber(number)) {
                props.createConversation(number, name);
+               setName("");
+               setNumber("");
+               props.setModalOpen(false);
           } else {
                alert("Invalid phone number");
           }
