@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Cookies from "cookies-js";
 
 export default function Login() {
@@ -9,7 +9,7 @@ export default function Login() {
      const router = useRouter();
 
      const handleLogin = async () => {
-          if (user === "admin" && password === "admin") {
+          if (user === "admin" && password === "supplyforever") {
                // window.localStorage.setItem("jwt", "admin");
                Cookies.set("jwt", "admin");
                router.push("/");
@@ -17,6 +17,12 @@ export default function Login() {
                alert("Invalid credentials");
           }
      };
+
+     useEffect(() => {
+          if (Cookies("jwt") === "admin") {
+               router.push("/");
+          }
+     }, []);
 
      return (
           <>

@@ -6,11 +6,15 @@ import ConversationsList from "../components/ConversationsList";
 import InputGroup from "../components/InputGroup";
 import Welcome from "../components/Welcome";
 import Conversation from "../components/Conversation";
+import { useRouter } from "next/router";
+import Cookies from "cookies-js";
 
 const Sdk = () => {
      const [conversations, setConversations] = useState<any[]>([]);
      const [selectedConvo, setSelectedConvo] = useState<any>();
      const [client, setClient] = useState<any>();
+
+     const router = useRouter();
 
      const getConversations = async (client: any) => {
           await client.on("conversationJoined", (convo: any) => {
@@ -18,7 +22,6 @@ const Sdk = () => {
                     ...prevConversations,
                     convo,
                ]);
-               console.log(convo);
           });
 
           await client.on("conversationLeft", (convo: any) => {
@@ -69,11 +72,15 @@ const Sdk = () => {
      };
 
      useEffect(() => {
-          getToken().then((token: string) => {
-               const client = new Client(token);
-               getConversations(client);
-               setClient(client);
-          });
+          if (Cookies("jwt") === "admin") {
+               getToken().then((token: string) => {
+                    const client = new Client(token);
+                    getConversations(client);
+                    setClient(client);
+               });
+          } else {
+               router.push("/login");
+          }
      }, []);
 
      return (
