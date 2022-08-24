@@ -3,20 +3,15 @@ import { useEffect, useState } from "react";
 import validator from "validator";
 import MessageBubble from "./MessageBubble";
 import Order from "./Order";
-import {
-  GET_DISPATCH_INFO_URL,
-  GET_ORDER_BY_ID_URL,
-  COMPLETE_ORDER_URL,
-  ADD_DISPATCH_MODIFICATION_URL,
-} from "../constants";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 interface ConversationProps {
   conversation: any;
+  dispatch: any;
 }
 
 const Conversation = (props: ConversationProps) => {
-  const [orderSummary, setOrderSummary] = useState(true);
+  const [orderSummary, setOrderSummary] = useState(false);
   const [orderState, setOrderState] = useState<any>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [dispatchInfo, setDispatchInfo] = useState<any>([]);
@@ -33,56 +28,7 @@ const Conversation = (props: ConversationProps) => {
     }
   };
 
-  const fetchDispatchInfo = async (sid: string) => {
-    const response = await axios.get(`${GET_DISPATCH_INFO_URL}${sid}`);
-    setDispatchInfo(response.data);
-    return await response.data;
-  };
-
-  const fetchOrderDetails = async () => {
-    setOrderState([]);
-    try {
-      const orders = await fetchDispatchInfo(props.conversation.sid);
-      await orders.map(async (order: any) => {
-        try {
-          const response = await axios.get(
-            `${GET_ORDER_BY_ID_URL}${order.order_id}`
-          );
-          setOrderState(response.data);
-        } catch (error) {
-          console.log(error);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const completeOrder = async (orderId: string) => {
-    const url = `${COMPLETE_ORDER_URL}${props.conversation.sid}&order=${orderId}`;
-    try {
-      const response = await axios.post(url);
-      fetchOrderDetails();
-      setOrderSummary(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const addModification = async (orderId: string, message: string) => {
-    try {
-      const url = `${ADD_DISPATCH_MODIFICATION_URL}${orderId}`;
-      const response = await axios.post(url, {
-        modification: message,
-      });
-      fetchDispatchInfo(props.conversation.sid);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    fetchOrderDetails();
     getMessages(props.conversation);
   }, [props.conversation]);
 
@@ -106,12 +52,7 @@ const Conversation = (props: ConversationProps) => {
           Toggle Summary
         </button>
         {orderSummary ? (
-          <Order
-            addModification={addModification}
-            orderData={orderState}
-            completeOrder={completeOrder}
-            dispatchInfo={dispatchInfo}
-          />
+          <Order dispatch={props.dispatch} />
         ) : (
           <ul className="flex flex-col justify-end h-full" ref={listRef}>
             {messages.map((message) => (
